@@ -15,3 +15,8 @@ server.pid
 *.eml
 /dist/
 .cache
+
+
+.idea
+.classpath
+.project
