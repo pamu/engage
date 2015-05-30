@@ -7,6 +7,7 @@ libraryDependencies ++= Seq(
   "org.webjars" % "bootstrap" % "2.3.1",
   "org.webjars" % "requirejs" % "2.1.11-1",
   "com.typesafe.slick" %% "slick" % "3.0.0",
+  "com.zaxxer" % "HikariCP" % "2.3.8",
   "mysql" % "mysql-connector-java" % "5.1.35"
 )
 

@@ -1,6 +1,6 @@
 package models
 
-import slick.driver.MySQLDriver.simple._
+import slick.driver.MySQLDriver.api._
 
 /**
  * Created by pnagarjuna on 27/05/15.

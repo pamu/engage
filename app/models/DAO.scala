@@ -4,6 +4,8 @@ import scala.concurrent.Future
 import models.Models._
 import slick.driver.MySQLDriver.api._
 
+import play.api.libs.concurrent.Execution.Implicits.defaultContext
+
 /**
  * Created by pnagarjuna on 27/05/15.
  */
