@@ -7,7 +7,7 @@ import slick.driver.MySQLDriver.api._
  */
 object DB {
   lazy val db = Database.forURL(
-      url  = "jdbc:mysql://localhost:3306/engage", 
+      url  = "jdbc:mysql://localhost/engage",
       driver = "com.mysql.jdbc.Driver",
       user = "root",
       password = "root")

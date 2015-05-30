@@ -5,10 +5,15 @@
 # Auth controller
 
 GET     /login                      controllers.Auth.login()
+POST    /loginSubmit                controllers.Auth.loginSubmit()
+GET     /signup                     controllers.Auth.signup()
+POST    /signupSubmit               controllers.Auth.signupSubmit()
+GET     /logout                     controllers.Auth.logout()
 
 # Application controller
 
 GET     /                           controllers.Application.index()
+GET     /home                       controllers.Application.home()
 
 # Map static resources from the /public folder to the /assets URL path
 GET     /assets/*file               controllers.Assets.at(path="/public", file)
