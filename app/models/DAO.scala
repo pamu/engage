@@ -19,4 +19,7 @@ object DAO {
     val q = for(user <- Tables.users.filter(_.userId === userId)) yield user
     DB.db.run(q.result).map(_ head)
   }
+  def auth(email: String, password: String): Boolean = true
+  def exists(email: String): Boolean = true
+  def createUser(email: String, password: String): Unit = ???
 }
