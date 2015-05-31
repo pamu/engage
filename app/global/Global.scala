@@ -3,9 +3,6 @@ package global
 import models.DAO
 import play.api.{Logger, Application, GlobalSettings}
 
-import scala.util.{Failure, Success}
-import play.api.libs.concurrent.Execution.Implicits.defaultContext
-
 /**
  * Created by pnagarjuna on 30/05/15.
  */
