@@ -34,6 +34,6 @@ object DAO {
   }
   def createUser(email: String, password: String): Future[Unit] = {
     val q = DBIO.seq(Tables.users += User(Utils.randomStr, email, password, new Timestamp(new Date().getTime())))
-    DB.db.run(q)
+    DB.db.run(q.transactionally)
   }
 }
