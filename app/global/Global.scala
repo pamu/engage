@@ -12,10 +12,12 @@ import play.api.libs.concurrent.Execution.Implicits.defaultContext
 object Global extends GlobalSettings {
   override def onStop(app: Application): Unit = {
     super.onStop(app)
-    DAO.init() onComplete {
+    println(DAO.init().value)
+    /*
+    onComplete {
       case Success(x) => Logger.info("created schema")
       case Failure(y) => Logger.info("schema creation failed")
-    }
+    }*/
     Logger.info("App Started")
   }
 

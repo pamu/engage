@@ -20,6 +20,8 @@ trait Secured {
       Action.async(parser)(request => f(userId)(request))
     }
   def withUser[A](parser: BodyParser[A])(f: User => Request[A] => Future[Result]) = withAuth(parser) { userId => implicit request =>
-    DAO.getUser(userId).flatMap(user => f(user)(request)).recover{case throwable: Throwable => Results.BadRequest("Bad Request")}
+    DAO.getUser(userId).flatMap(user => f(user)(request)).recover{case throwable: Throwable =>
+      Results.Redirect(routes.Auth.login()).withNewSession.flashing("failure" -> s"Something went wrong :(, ${throwable.getMessage}")
+    }
   }
 }

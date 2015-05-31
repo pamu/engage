@@ -1,5 +1,6 @@
 package controllers
 
+import constants.Constants
 import models.DAO
 import play.api.data.Form
 import play.api.data.Forms._
@@ -22,20 +23,16 @@ object Auth extends Controller with Secured {
   )
 
   def login = Action { implicit request =>
-    request.session.get("email").map(email => Redirect(routes.Application.home)).getOrElse(Ok(views.html.login(loginForm)(request.flash)))
+    request.session.get(Constants.userId).map(email => Redirect(routes.Application.home)).getOrElse(Ok(views.html.login(loginForm)(request.flash)))
   }
 
   def loginSubmit = Action.async { implicit request =>
     loginForm.bindFromRequest().fold(
       hasErrors => Future(BadRequest(views.html.login(hasErrors)(request.flash))),
       success => {
-        DAO.auth(success._1, success._2).map(result => {
-          if (result) {
-            Redirect(routes.Application.home()).withSession("email" -> success._1)
-          } else {
-            Redirect(routes.Auth.login).flashing("failure" -> Messages("error.login_failed"))
-          }
-        }).recover {case t => Redirect(routes.Auth.login).flashing("failure" -> Messages("error.login_failed"))}
+        DAO.getAuthUser(success._1, success._2).map(result => {
+          Redirect(routes.Application.home()).withSession(Constants.userId -> result.userId)
+        }).recover {case t => Redirect(routes.Auth.login).flashing("failure" -> Messages("error.login_failed", "hello"))}
       }
     )
   }
@@ -51,7 +48,7 @@ object Auth extends Controller with Secured {
   )
 
   def signup = Action { implicit request =>
-    request.session.get("email").map(email => Redirect(routes.Application.home)).getOrElse(Ok(views.html.signup(signupForm)(request.flash)))
+    request.session.get(Constants.userId).map(email => Redirect(routes.Application.home)).getOrElse(Ok(views.html.signup(signupForm)(request.flash)))
   }
 
   def signupSubmit = Action.async { implicit request =>
@@ -64,9 +61,9 @@ object Auth extends Controller with Secured {
         if (password == password_2) {
           DAO.createUser(email, password)
             .map(_ => Redirect(routes.Auth.login).flashing("success" -> "Signup successful."))
-            .recover {case t => Redirect(routes.Auth.signup()).flashing("failure" -> "Signup Failed")}
+            .recover {case t => Redirect(routes.Auth.signup()).withNewSession.flashing("failure" -> "Signup Failed")}
         } else {
-          Future(Redirect(routes.Auth.signup()).flashing("success" -> "Signup Failed."))
+          Future(Redirect(routes.Auth.signup()).withNewSession.flashing("success" -> "Signup Failed."))
         }
       }
     )

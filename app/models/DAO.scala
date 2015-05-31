@@ -1,5 +1,6 @@
 package models
 
+import java.security.MessageDigest
 import java.sql.Timestamp
 import java.util.Date
 
@@ -24,16 +25,27 @@ object DAO {
     val q = for(user <- Tables.users.filter(_.userId === userId)) yield user
     DB.db.run(q.result).map(_ head)
   }
+  def getUserWithEmail(email: String): Future[User] = {
+    val q = for(user <- Tables.users.filter(_.email === email)) yield user
+    DB.db.run(q.result).map(_ head)
+  }
   def auth(email: String, password: String): Future[Boolean]  = {
     val q = for(user <- Tables.users.filter(_.email === email).filter(_.password === password)) yield user
     DB.db.run(q.exists.result)
+  }
+  def getAuthUser(email: String, password: String): Future[User] = {
+    val md5 = MessageDigest.getInstance("MD5").digest(password.toCharArray.map(_.toByte))
+    val q = for(user <- Tables.users.filter(_.email === email).filter(_.password === String.valueOf(md5))) yield user
+    DB.db.run(q.result).map(_ head)
   }
   def exists(email: String): Future[Boolean] = {
     val q = for(user <- Tables.users.filter(_.email === email)) yield user
     DB.db.run(q.exists.result)
   }
   def createUser(email: String, password: String): Future[Unit] = {
-    val q = DBIO.seq(Tables.users += User(Utils.randomStr, email, password, new Timestamp(new Date().getTime())))
+    val timestamp = new Timestamp(new Date().getTime())
+    val md5 = MessageDigest.getInstance("MD5").digest(password.toCharArray.map(_.toByte))
+    val q = DBIO.seq(Tables.users += User(s"${Utils.randomStr}${timestamp.getTime}", email, String.valueOf(md5), timestamp))
     DB.db.run(q.transactionally)
   }
 }
