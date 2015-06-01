@@ -34,8 +34,7 @@ object DAO {
     DB.db.run(q.exists.result)
   }
   def getAuthUser(email: String, password: String): Future[User] = {
-    val md5 = MessageDigest.getInstance("MD5").digest(password.toCharArray.map(_.toByte))
-    val q = for(user <- Tables.users.filter(_.email === email).filter(_.password === String.valueOf(md5))) yield user
+    val q = for(user <- Tables.users.filter(_.email === email).filter(_.password === password)) yield user
     DB.db.run(q.result).map(_ head)
   }
   def exists(email: String): Future[Boolean] = {
@@ -44,8 +43,7 @@ object DAO {
   }
   def createUser(email: String, password: String): Future[Unit] = {
     val timestamp = new Timestamp(new Date().getTime())
-    val md5 = MessageDigest.getInstance("MD5").digest(password.toCharArray.map(_.toByte))
-    val q = DBIO.seq(Tables.users += User(s"${Utils.randomStr}${timestamp.getTime}", email, String.valueOf(md5), timestamp))
+    val q = DBIO.seq(Tables.users += User(s"${Utils.randomStr}${timestamp.getTime}", email, password, timestamp))
     DB.db.run(q.transactionally)
   }
 }

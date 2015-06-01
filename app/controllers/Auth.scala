@@ -32,7 +32,7 @@ object Auth extends Controller with Secured {
       success => {
         DAO.getAuthUser(success._1, success._2).map(result => {
           Redirect(routes.Application.home()).withSession(Constants.userId -> result.userId)
-        }).recover {case t => Redirect(routes.Auth.login).flashing("failure" -> Messages("error.login_failed", "hello"))}
+        }).recover {case t => Redirect(routes.Auth.login).withNewSession.flashing("failure" -> "Login Failed, Please Signup.")}
       }
     )
   }
@@ -51,6 +51,7 @@ object Auth extends Controller with Secured {
     request.session.get(Constants.userId).map(email => Redirect(routes.Application.home)).getOrElse(Ok(views.html.signup(signupForm)(request.flash)))
   }
 
+  //save database calls. Avoid database calls if necessary
   def signupSubmit = Action.async { implicit request =>
     signupForm.bindFromRequest().fold(
       hasErrors => Future(BadRequest(views.html.signup(hasErrors)(request.flash))),
@@ -59,13 +60,18 @@ object Auth extends Controller with Secured {
         val password = success._2._1
         val password_2 = success._2._2
         if (password == password_2) {
-          DAO.createUser(email, password)
-            .map(_ => Redirect(routes.Auth.login).flashing("success" -> "Signup successful."))
-            .recover {case t => Redirect(routes.Auth.signup()).withNewSession.flashing("failure" -> "Signup Failed")}
-        } else {
-          Future(Redirect(routes.Auth.signup()).withNewSession.flashing("success" -> "Signup Failed."))
+          DAO.exists(email).flatMap { exists =>
+            if (exists) Future(Redirect(routes.Auth.signup()).withNewSession.flashing("failure" -> "Email is taken."))
+            else {
+              DAO.createUser(email, password)
+                .map(_ => Redirect(routes.Auth.login).flashing("success" -> "Signup successful."))
+                .recover {case t => Redirect(routes.Auth.signup()).withNewSession.flashing("failure" -> "Signup Failed. User cannot be created.")}
+            }
+          }
+        }else {
+          Future(Redirect(routes.Auth.signup()).withNewSession.flashing("success" -> "Passwords do not match."))
         }
-      }
+        }
     )
   }
 
