@@ -18,4 +18,10 @@ object Application extends Controller with Secured {
       Ok(views.html.home()(request.flash))
     }
   }
+
+  def newDiscussion() = withUser(parse.anyContent) { user => implicit request =>
+    Future {
+      Ok(views.html.newDiscussion()(request.flash))
+    }
+  }
 }

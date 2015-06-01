@@ -1,0 +1,14 @@
+@()(flash: play.api.mvc.Flash)(implicit session: play.api.mvc.Session)
+
+@main("Engage"){
+    <legend>Start New Discussion</legend>
+    <form>
+        <label>Heading</label>
+        <textarea class="span6" placeholder="Heading"></textarea>
+        <label>Description</label>
+        <textarea class="span6" placeholder="Description"></textarea>
+        <div>
+            <button class="btn btn-default">Submit</button>
+        </div>
+    </form>
+}

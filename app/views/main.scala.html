@@ -1,4 +1,4 @@
-@(title: String)(content: Html)
+@(title: String)(content: Html)(implicit session: play.api.mvc.Session)
 
 <!DOCTYPE html>
 <html>
@@ -18,6 +18,14 @@
         <div class="navbar-inner">
             <div class="container-fluid">
                 <a id="titleLink" class="brand" href="/">@title</a>
+                <ul class="nav pull-right">
+                    @session.get("user_id").map { userId =>
+                        <li><a href="/newDiscussion"><i class="icon-pencil"></i>New Discussion</a></li>
+                        <li><a href="/profile"><i class="icon-user"></i>Profile</a></li>
+                        <li><a href="/notifications"><i class="icon-globe"></i>Notifications</a></li>
+                        <li><a href="/logout"><i class="icon-off"></i>logout</a></li>
+                    }
+                </ul>
             </div>
         </div>
     </div>
