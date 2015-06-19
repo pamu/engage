@@ -7,5 +7,6 @@ import java.sql.Timestamp
  */
 object Models {
   case class User(userId: String, email: String, password: String, timestamp: Timestamp, id: Option[Long] = None)
-  case class Entity(key: String, value: String, timestamp: Timestamp, id: Option[Long] = None)
+  //case class Entity(key: String, value: String, timestamp: Timestamp, id: Option[Long] = None)
+  case class Discussion(heading: String, desc: Option[String], authorId: Long, timestamp: Timestamp, id: Option[Long] = None)
 }
